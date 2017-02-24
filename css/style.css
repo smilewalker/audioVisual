@@ -7,4 +7,10 @@ html, body {
 	width: 100%;
 	height: 100%;
 }
-/*canvas { background-color: #eee;  }*/
+.hint-txt {
+	width: 100%;
+	background-color: #6cc;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	/*color: #555;*/
+}

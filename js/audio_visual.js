@@ -7,14 +7,18 @@ window.cancelAnimationFrame = window.cancelAnimationFrame || window.webkitCancel
 // declare new audio context
 try {
     var audioCtx = new AudioContext();
+    var source = audioCtx.createBufferSource();
+    
 } catch (e) {
     alert('Your browser does not support AudioContext!');
     console.log(e);
 }
 
+var hint_txt = document.getElementById('hint-txt');
+
 // Get an AudioBufferSourceNode.
 // This is the AudioNode to use when we want to play an AudioBuffer
-var source = audioCtx.createBufferSource();
+// var source = audioCtx.createBufferSource();
 
 // define variable params
 var canvas = document.getElementById('audio_canvas'),
@@ -30,11 +34,11 @@ var bar_width = 10,
 
 var cap_height = 2;
 
+// 创建数组，判断动画结束
 var array = [];
-var status = false;
+// isEnd表示播放是否结束，0表示结束
+var isEnd = false;
 var animation_id = null;
-
-
 
 // use XHR to load an audio track, and
 // decodeAudioData to decode it and stick it in a buffer.
@@ -42,7 +46,7 @@ var animation_id = null;
 var xhr = new XMLHttpRequest();
 
 // 初始化 HTTP 请求参数, 配置请求类型，文件路径等
-xhr.open('GET', 'audio/music.mp3');
+xhr.open('GET', 'audio/music1.mp3');
 
 // 将responseType设为arraybuffer,二进制数据
 xhr.responseType = "arraybuffer";
@@ -50,21 +54,21 @@ xhr.responseType = "arraybuffer";
 // 获取完成，对音频进一步操作，解码
 xhr.onload = function() {
     var audioData = xhr.response;
+    // Get an AudioBufferSourceNode.
+    // This is the AudioNode to use when we want to play an AudioBuffer
+    // var source = audioCtx.createBufferSource();
 
     // decodeAudioData to decode it and stick it in a buffer.buffer = decodedData
     audioCtx.decodeAudioData(audioData, function(buffer) {
-
-        // create audio node to play the audio in the buffer
-        var analyser = audioCtx.createAnalyser(),
-            bufferLength = analyser.frequencyBinCount,
-            dataArray = new Uint8Array(bufferLength);
-
-        // 每段包含的频谱宽
-        var array_width = Math.round(bufferLength / bar_num);
-
-        status = 1;
         // set the buffer in the AudioBufferSourceNode
         source.buffer = buffer;
+
+        // create audio node to play the audio in the buffer
+        var analyser = audioCtx.createAnalyser();
+
+        
+
+        isEnd = false;
 
         // connect the analyser to the destination(the speaker), or we won't hear the sound
         // from audioCtx.createBuffer, or audioCtx.decodeAudioData
@@ -73,20 +77,24 @@ xhr.onload = function() {
 
         // start the source playing
         source.start(0);
-
+        hint_txt.innerHTML = '《理想三旬》播放中……';
         source.onended = function() {
-            // alert(2)
-            status = 0;
-            // console.log(source.duration)
-            // cancelAnimationFrame(animation_id);
+            isEnd = true;
         };
 
         function drawVisual() {
             var i = 0, value;
-            analyser.getByteFrequencyData(dataArray);
-            console.log(status==0)
+            
+            var bufferLength = analyser.frequencyBinCount,
+                dataArray = new Uint8Array(bufferLength);
 
-            if(status == 0) {
+            // 每段包含的频谱宽
+            var array_width = Math.round(bufferLength / bar_num);
+
+            analyser.getByteFrequencyData(dataArray);
+            console.log(isEnd==0)
+
+            if(isEnd) {
                 console.log(array)
 
                 for (var i = dataArray.length - 1; i >= 0; i--) {
@@ -102,6 +110,7 @@ xhr.onload = function() {
                 if(isStop) {
                     // console.log(isStop)
                     cancelAnimationFrame(animation_id);
+                    hint_txt.innerHTML = '播放结束';
                     return;
                 }
             }
@@ -127,15 +136,12 @@ xhr.onload = function() {
 
             animation_id = requestAnimationFrame(drawVisual);
             // console.log(animation_id)
-
         }
         animation_id = requestAnimationFrame(drawVisual);
         // cancelAnimationFrame(drawVisual)
-        
     },
 
     function(e) { console.log("Error with decoding audio data" + e.err); });
-
 };
 
 xhr.send();
