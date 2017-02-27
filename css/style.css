@@ -9,8 +9,12 @@ html, body {
 }
 .hint-txt {
 	width: 100%;
+	padding: 10px;
+	background-color: #fc7;
+}
+
+.choose-file {
+	padding: 10px;
 	background-color: #6cc;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	/*color: #555;*/
+	color: #555;
 }

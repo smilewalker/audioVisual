@@ -1,3 +1,9 @@
+/**
+ * Visualize Audio 
+ * Author: smilewalker
+ * Feb 27, 2017
+ */
+
 
 var AudioVisual = function (musicurl) {
   this.musicUrl = musicurl;
@@ -18,7 +24,7 @@ AudioVisual.prototype = {
         c_width = canvas.width,
         c_height = canvas.height;
 
-    // 条形的数据
+    // 条形的参数
     var bar_width = 10,
         bar_gap = 2,
         bar_part = bar_width + bar_gap,
@@ -26,8 +32,8 @@ AudioVisual.prototype = {
 
     // 线条高度
     var cap_height = 2;
-    
-    // 音频数据
+
+    // 获取的音频数据
     var bufferLength = analyser.frequencyBinCount,
         dataArray = new Uint8Array(bufferLength);
 
@@ -47,23 +53,24 @@ AudioVisual.prototype = {
 
     var drawVisual = function () {
       that.analyser.getByteFrequencyData(dataArray);
-      if(that.isEnd) {
-          isStop = true;
-          console.log(that.isEnd)
-          for (i = dataArray.length - 1; i >= 0; i--) {
-              dataArray[i] = 0;
-          }
 
-          // 使其静止时图为空
-          for (i = array.length - 1; i >= 0; i--) {
-              isStop = isStop && (array[i] == 0);
-          };
-          
-          if(isStop) {
-              cancelAnimationFrame(animation_id);
-              that.changeTxt('播放结束');
-              return;
-          }
+      if (that.isEnd) {
+        isStop = true;
+        console.log(that.isEnd)
+        for (i = dataArray.length - 1; i >= 0; i--) {
+          dataArray[i] = 0;
+        }
+
+        // 使其静止时图为空
+        for (i = array.length - 1; i >= 0; i--) {
+          isStop = isStop && (array[i] == 0);
+        };
+        
+        if(isStop) {
+          cancelAnimationFrame(animation_id);
+          that.changeTxt('播放结束');
+          return;
+        }
       }
 
       ctx.clearRect(0,0,c_width,c_height)
@@ -71,14 +78,14 @@ AudioVisual.prototype = {
       for(i = 0; i < bar_num; i++) {
         value = dataArray[i * array_width];
         if(array.length < bar_num) {
-            array.push(value)
+          array.push(value)
         }
         if (value < array[i]) {
-            --array[i];
-            ctx.fillRect(i * bar_part, c_height - array[i], bar_width, cap_height);
+          --array[i];
+          ctx.fillRect(i * bar_part, c_height - array[i], bar_width, cap_height);
         } else {
-            ctx.fillRect(i * 12, c_height - value, bar_width, cap_height);
-            array[i] = value;
+          ctx.fillRect(i * 12, c_height - value, bar_width, cap_height);
+          array[i] = value;
         };
         ctx.fillStyle = '#f99';
         ctx.fillRect(bar_part * i, c_height - value, bar_width, value);
@@ -138,20 +145,14 @@ AudioVisual.prototype = {
 
     // 获取完成，对音频进一步操作，解码
     xhr.onload = function() {
-        var audioData = xhr.response;
+      var audioData = xhr.response;
 
+      // decodeAudioData to decode it and stick it in a buffer.buffer = decodedData
+      that.audioCtx.decodeAudioData(audioData, function(buffer) {
+        that.playAudio(buffer);
+      },
 
-
-        // decodeAudioData to decode it and stick it in a buffer.buffer = decodedData
-        that.audioCtx.decodeAudioData(audioData, function(buffer) {
-
-
-          that.playAudio(buffer);
-
-            
-        },
-
-        function(e) { console.log("Error with decoding audio data" + e.err); });
+      function(e) { console.log("Error with decoding audio data" + e.err); });
     };
 
     xhr.send();
@@ -167,15 +168,15 @@ AudioVisual.prototype = {
 
     // declare new audio context
     try {
-        this.audioCtx = new AudioContext();
+      this.audioCtx = new AudioContext();
 
-        // Get an AudioBufferSourceNode.
-        // This is the AudioNode to use when we want to play an AudioBuffer
-        this.source = this.audioCtx.createBufferSource();
-        this.loadMusic()
+      // Get an AudioBufferSourceNode.
+      // This is the AudioNode to use when we want to play an AudioBuffer
+      this.source = this.audioCtx.createBufferSource();
+      this.loadMusic();
     } catch (e) {
-        alert('Your browser does not support AudioContext!');
-        console.log(e);
+      alert('Your browser does not support AudioContext!');
+      console.log(e);
     }
   }
 };

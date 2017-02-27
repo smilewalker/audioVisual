@@ -5,11 +5,18 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-	<p class="hint-txt" id="hint-txt">正在解析……</p>
+	<div class="choose-wrap">
+		<div>
+			<input class="choose-file" type="file" id="uploadedFile"></input>
+		</div>
+		<p class="hint-txt" id="hint-txt">正在解析……</p>
+	</div>
+	<!-- <p class="hint-txt" id="hint-txt">正在解析……</p> -->
     <div class="visualize_wrap">
         <canvas id="audio_canvas" width="800" height="400"></canvas>
     </div>
 
-    <script type="text/javascript" src="js/audio_visual_up.js"></script>
+
+    <script type="text/javascript" src="js/audio_choose.js"></script>
 </body>
 </html>

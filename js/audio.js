@@ -1,3 +1,8 @@
+/**
+ * Visualize Audio 
+ * Author: smilewalker
+ * Feb 27, 2017
+ */
 
 // create environment -- audio context
 // define variables

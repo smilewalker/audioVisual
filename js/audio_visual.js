@@ -1,3 +1,10 @@
+/**
+ * Visualize Audio 
+ * Author: smilewalker
+ * Feb 27, 2017
+ */
+
+
 //fix browser vender for AudioContext and requestAnimationFrame
 // Webkit/blink browser require a prefix, and it needs the window object specifically declared to work in Safari
 window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.msAudioContext;
@@ -65,8 +72,6 @@ xhr.onload = function() {
 
         // create audio node to play the audio in the buffer
         var analyser = audioCtx.createAnalyser();
-
-        
 
         isEnd = false;
 
